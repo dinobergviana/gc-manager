@@ -34,4 +34,4 @@ const database = {
   getNewClient,
 };
 
-export default database
+export default database;
