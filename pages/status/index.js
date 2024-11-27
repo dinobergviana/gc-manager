@@ -25,7 +25,6 @@ function UpdatedAt() {
 
   if (!isLoading && data) {
     updatedAtText = new Date(data.updated_at).toLocaleString("pt-BR");
-    setTimeout(() => {}, 20000);
   }
 
   return <div>Última atualização: {updatedAtText}</div>;
