@@ -1,4 +1,4 @@
-import { createRouter } from "next-connect"
+import { createRouter } from "next-connect";
 import database from "infra/database.js";
 import controller from "infra/controller.js";
 
@@ -14,9 +14,7 @@ async function getHandler(request, response) {
   const databseVersionResult = await database.query("SHOW server_version;");
   const databaseVersionValue = databseVersionResult.rows[0].server_version;
 
-  const databaseMaxConnections = await database.query(
-    "SHOW max_connections;",
-  );
+  const databaseMaxConnections = await database.query("SHOW max_connections;");
   const databaseMaxConnectionsValue =
     databaseMaxConnections.rows[0].max_connections;
 

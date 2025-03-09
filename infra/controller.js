@@ -13,14 +13,14 @@ function onErrorHandler(error, request, response) {
 
 function onNoMatchHandler(request, response) {
   const publicErrorbject = new MethodNotAllowedErrorError();
-  response.status(publicErrorbject.statusCode).json(publicErrorbject)
+  response.status(publicErrorbject.statusCode).json(publicErrorbject);
 }
 
 const controller = {
   errorHandlers: {
     onNoMatch: onNoMatchHandler,
-    onError: onErrorHandler
-  }
+    onError: onErrorHandler,
+  },
 };
 
 export default controller;

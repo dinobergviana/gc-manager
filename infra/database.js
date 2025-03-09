@@ -11,8 +11,8 @@ async function query(queryObject) {
   } catch (error) {
     const serviceErrorObject = new ServiceError({
       message: "Error na conexão com o Banco ou na Query.",
-      cause: error
-    })
+      cause: error,
+    });
     throw serviceErrorObject;
   } finally {
     await client?.end();
