@@ -23,7 +23,7 @@ async function listPedingMigrations() {
   } finally {
     await dbClient?.end();
   }
-};
+}
 
 async function runPendingMigrations() {
   let dbClient;
@@ -45,7 +45,7 @@ async function runPendingMigrations() {
 
 const migrator = {
   listPedingMigrations,
-  runPendingMigrations
+  runPendingMigrations,
 };
 
 export default migrator;
