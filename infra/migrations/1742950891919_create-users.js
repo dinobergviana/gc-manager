@@ -3,7 +3,7 @@ exports.up = (pgm) => {
     id: {
       type: "uuid",
       primaryKey: true,
-      default: pgm.func("gen_random_uuid()")
+      default: pgm.func("gen_random_uuid()"),
     },
     name: {
       type: "varchar(30)",
@@ -19,20 +19,26 @@ exports.up = (pgm) => {
       notNull: true,
       unique: true,
     },
-    // why 72? see https://security.stackexchange.com/q/39849
+    // why 60? see https://www.npmjs.com/package/bcrypt#hash-info
     password: {
-      type: "varchar(72)",
+      type: "varchar(60)",
+      notNull: true,
+    },
+    campus: {
+      type: "integer",
       notNull: true,
     },
     created_at: {
-      type: 'timestamptz',
-      default: pgm.func("now()")
+      type: "timestamptz",
+      default: pgm.func("timezone('utc', now())"),
+      notNull: true,
     },
     updated_at: {
-      type: 'timestamptz',
-      default: pgm.func("now()")
-    }
-  })
+      type: "timestamptz",
+      default: pgm.func("timezone('utc', now())"),
+      notNull: true,
+    },
+  });
 };
 
-exports.down = false
+exports.down = false;
