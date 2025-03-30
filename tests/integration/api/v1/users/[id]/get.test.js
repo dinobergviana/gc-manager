@@ -57,9 +57,9 @@ describe("GET /api/v1/users", () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: "Flavio",
-          last_name: "Barbeitas",
-          email: "flavio.barbeitas@gmail.com",
+          name: "Giovani",
+          last_name: "Gio",
+          email: "giovani.gio@gmail.com",
           password: "senha123",
           campus: 1,
         }),
