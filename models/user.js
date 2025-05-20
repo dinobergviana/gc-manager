@@ -4,13 +4,8 @@ import password from "models/password.js";
 import { ValidationError, NotFoundError } from "infra/errors.js";
 
 async function create(userInputValues) {
-  await validatedUniqueEmail(userInputValues.email);
+  await validateUniqueEmail(userInputValues.email);
   await hashPasswordInObject(userInputValues);
-
-  async function hashPasswordInObject(userInputValues) {
-    const hashedPassword = await password.hash(userInputValues.password);
-    userInputValues.password = hashedPassword;
-  }
 
   const newUser = await runInsertQuery(userInputValues);
 
@@ -75,7 +70,11 @@ async function update(userId, userInputValues) {
   const currentUser = await findOneById(userId);
 
   if ("email" in userInputValues) {
-    await validatedUniqueEmail(userInputValues.email);
+    await validateUniqueEmail(userInputValues.email);
+  }
+
+  if ("password" in userInputValues) {
+    await hashPasswordInObject(userInputValues);
   }
 
   const userWithNewValues = { ...currentUser, ...userInputValues };
@@ -114,7 +113,7 @@ async function update(userId, userInputValues) {
   }
 }
 
-async function validatedUniqueEmail(email) {
+async function validateUniqueEmail(email) {
   const results = await database.query({
     text: `
         SELECT 
@@ -133,6 +132,11 @@ async function validatedUniqueEmail(email) {
       action: "Utilize outro email para realizar esta operação.",
     });
   }
+}
+
+async function hashPasswordInObject(userInputValues) {
+  const hashedPassword = await password.hash(userInputValues.password);
+  userInputValues.password = hashedPassword;
 }
 
 const user = {
