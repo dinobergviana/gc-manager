@@ -1,29 +1,11 @@
 import database from "infra/database.js";
+import password from "models/password.js";
+
 import { ValidationError, NotFoundError } from "infra/errors.js";
 
 async function create(userInputValues) {
-  await validatedUniqueEmail(userInputValues.email);
-
-  async function validatedUniqueEmail(email) {
-    const results = await database.query({
-      text: `
-        SELECT 
-          email
-        FROM
-          users
-        WHERE
-          LOWER(email) = LOWER($1)
-        ;`,
-      values: [email],
-    });
-
-    if (results.rowCount > 0) {
-      throw new ValidationError({
-        message: "O email informado já está em uso.",
-        action: "Utilize outro email para realizar o cadastro.",
-      });
-    }
-  }
+  await validateUniqueEmail(userInputValues.email);
+  await hashPasswordInObject(userInputValues);
 
   const newUser = await runInsertQuery(userInputValues);
 
@@ -83,9 +65,84 @@ async function findOneById(userId) {
   return userFound;
 }
 
+// implementar atualização dos demais campos: name, last_name, campus e password
+async function update(userId, userInputValues) {
+  const currentUser = await findOneById(userId);
+
+  if ("email" in userInputValues) {
+    await validateUniqueEmail(userInputValues.email);
+  }
+
+  if ("password" in userInputValues) {
+    await hashPasswordInObject(userInputValues);
+  }
+
+  const userWithNewValues = { ...currentUser, ...userInputValues };
+
+  const updatedUser = await runUpdateQuery(userWithNewValues);
+  return updatedUser;
+
+  async function runUpdateQuery(userWithNewValues) {
+    const results = await database.query({
+      text: `
+        UPDATE
+          users
+        SET
+          name = $2,
+          last_name = $3,
+          email = $4,
+          password = $5,
+          campus = $6,
+          updated_at = timezone('utc', now())
+        WHERE
+          id = $1
+        RETURNING
+          *
+      `,
+      values: [
+        userWithNewValues.id,
+        userWithNewValues.name,
+        userWithNewValues.last_name,
+        userWithNewValues.email,
+        userWithNewValues.password,
+        userWithNewValues.campus,
+      ],
+    });
+
+    return results.rows[0];
+  }
+}
+
+async function validateUniqueEmail(email) {
+  const results = await database.query({
+    text: `
+        SELECT 
+          email
+        FROM
+          users
+        WHERE
+          LOWER(email) = LOWER($1)
+        ;`,
+    values: [email],
+  });
+
+  if (results.rowCount > 0) {
+    throw new ValidationError({
+      message: "O email informado já está em uso.",
+      action: "Utilize outro email para realizar esta operação.",
+    });
+  }
+}
+
+async function hashPasswordInObject(userInputValues) {
+  const hashedPassword = await password.hash(userInputValues.password);
+  userInputValues.password = hashedPassword;
+}
+
 const user = {
   create,
   findOneById,
+  update,
 };
 
 export default user;

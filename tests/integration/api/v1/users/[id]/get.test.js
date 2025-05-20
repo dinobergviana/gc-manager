@@ -1,6 +1,9 @@
 import orchestrator from "tests/orchestrator";
 import { version as uuidVersion } from "uuid";
 
+import user from "models/user.js";
+import password from "models/password.js";
+
 beforeAll(async () => {
   await orchestrator.awaitForAllServices();
   await orchestrator.clearDatabase();
@@ -39,7 +42,7 @@ describe("GET /api/v1/users", () => {
         name: "Joao",
         last_name: "Doe",
         email: "joao.doe@gmail.com",
-        password: "senha123",
+        password: response2Body.password,
         campus: 1,
         created_at: response2Body.created_at,
         updated_at: response2Body.updated_at,
@@ -48,6 +51,20 @@ describe("GET /api/v1/users", () => {
       expect(uuidVersion(response2Body.id)).toBe(4);
       expect(Date.parse(response2Body.created_at)).not.toBeNaN();
       expect(Date.parse(response2Body.updated_at)).not.toBeNaN();
+
+      const userInDatabase = await user.findOneById(response2Body.id);
+      const correctPasswordMath = await password.compare(
+        "senha123",
+        userInDatabase.password,
+      );
+
+      const incorrectPasswordMath = await password.compare(
+        "senhaErrada123",
+        userInDatabase.password,
+      );
+
+      expect(correctPasswordMath).toBe(true);
+      expect(incorrectPasswordMath).toBe(false);
     });
 
     test("With not valid uuid", async () => {
