@@ -13,21 +13,13 @@ beforeAll(async () => {
 describe("GET /api/v1/users", () => {
   describe("Anonymous user", () => {
     test("With valid uuid", async () => {
-      const response1 = await fetch("http://localhost:3000/api/v1/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: "Joao",
-          last_name: "Doe",
-          email: "joao.doe@gmail.com",
-          password: "senha123",
-          campus: 1,
-        }),
+      const response1Body = await orchestrator.createUser({
+        name: "Joao",
+        last_name: "Doe",
+        email: "joao.doe@gmail.com",
+        password: "senha123",
+        campus: 1,
       });
-      const response1Body = await response1.json();
-      expect(response1.status).toBe(201);
 
       const response2 = await fetch(
         `http://localhost:3000/api/v1/users/${response1Body.id}`,
@@ -68,21 +60,13 @@ describe("GET /api/v1/users", () => {
     });
 
     test("With not valid uuid", async () => {
-      const response1 = await fetch("http://localhost:3000/api/v1/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: "Giovani",
-          last_name: "Gio",
-          email: "giovani.gio@gmail.com",
-          password: "senha123",
-          campus: 1,
-        }),
+      await orchestrator.createUser({
+        name: "Giovani",
+        last_name: "Gio",
+        email: "giovani.gio@gmail.com",
+        password: "senha123",
+        campus: 1,
       });
-
-      expect(response1.status).toBe(201);
 
       const response2 = await fetch("http://localhost:3000/api/v1/users/1");
 
