@@ -8,7 +8,7 @@ exports.up = (pgm) => {
     token: {
       type: "varchar(96)",
       notNull: true,
-      unique: true
+      unique: true,
     },
     user_id: {
       type: "uuid",

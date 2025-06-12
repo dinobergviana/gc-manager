@@ -1,57 +1,60 @@
 import user from "models/user.js";
 import password from "models/password.js";
-import { NotFoundError, UnauthorizedError } from "infra/errors.js"
+import { NotFoundError, UnauthorizedError } from "infra/errors.js";
 
 async function getAuthenticatedUser(providedEmail, providedPassword) {
   try {
-    const storedUser = await findUserByEmail(providedEmail)
-    await validatePassword(providedPassword, storedUser.password)
-  
-    return storedUser
+    const storedUser = await findUserByEmail(providedEmail);
+    await validatePassword(providedPassword, storedUser.password);
+
+    return storedUser;
   } catch (error) {
     if (error instanceof UnauthorizedError) {
       throw new UnauthorizedError({
         message: "Dados de autenticação não conferem",
-        action: "Verifique se os dados estão corretos."
-      })
+        action: "Verifique se os dados estão corretos.",
+      });
     }
 
-    throw error
+    throw error;
   }
 
   async function findUserByEmail(providedEmail) {
     let storedUser;
-  
+
     try {
       storedUser = await user.findOneByEmail(providedEmail);
     } catch (error) {
       if (error instanceof NotFoundError) {
         throw new UnauthorizedError({
           message: "Email não confere.",
-          action: "Verifique se este dado está correto."
-        })
+          action: "Verifique se este dado está correto.",
+        });
       }
 
-      throw error
+      throw error;
     }
 
-    return storedUser
+    return storedUser;
   }
 
   async function validatePassword(providedPassword, storedPassword) {
-    const correctPasswordMatch = await password.compare(providedPassword, storedPassword);
+    const correctPasswordMatch = await password.compare(
+      providedPassword,
+      storedPassword,
+    );
 
     if (!correctPasswordMatch) {
       throw new UnauthorizedError({
         message: "Senha não confere.",
-        action: "Verifique se este dado está correto."
-      })
+        action: "Verifique se este dado está correto.",
+      });
     }
   }
 }
 
 const authentication = {
-  getAuthenticatedUser
-}
+  getAuthenticatedUser,
+};
 
-export default authentication
+export default authentication;

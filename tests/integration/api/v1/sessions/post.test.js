@@ -1,7 +1,7 @@
-import setCookieParser from 'set-cookie-parser';
+import setCookieParser from "set-cookie-parser";
 import { version as uuidVersion } from "uuid";
 import orchestrator from "tests/orchestrator";
-import session from "models/session.js"
+import session from "models/session.js";
 
 beforeAll(async () => {
   await orchestrator.awaitForAllServices();
@@ -13,7 +13,7 @@ describe("POST /api/v1/sessions", () => {
   describe("Anonymous user", () => {
     test("With inconrrect email but correct password", async () => {
       await orchestrator.createUser({
-        password: "senha-correta"
+        password: "senha-correta",
       });
 
       const response = await fetch("http://localhost:3000/api/v1/sessions", {
@@ -28,20 +28,20 @@ describe("POST /api/v1/sessions", () => {
       });
 
       expect(response.status).toBe(401);
-      
+
       const responseBody = await response.json();
 
       expect(responseBody).toEqual({
         name: "UnauthorizedError",
         message: "Dados de autenticação não conferem",
         action: "Verifique se os dados estão corretos.",
-        status_code: 401
-      })
-    })
+        status_code: 401,
+      });
+    });
 
     test("With conrrect email but incorrect password", async () => {
       await orchestrator.createUser({
-        email: "email.correto@email.com"
+        email: "email.correto@email.com",
       });
 
       const response = await fetch("http://localhost:3000/api/v1/sessions", {
@@ -56,16 +56,16 @@ describe("POST /api/v1/sessions", () => {
       });
 
       expect(response.status).toBe(401);
-      
+
       const responseBody = await response.json();
 
       expect(responseBody).toEqual({
         name: "UnauthorizedError",
         message: "Dados de autenticação não conferem",
         action: "Verifique se os dados estão corretos.",
-        status_code: 401
-      })
-    })
+        status_code: 401,
+      });
+    });
 
     test("With inconrrect email and incorrect password", async () => {
       await orchestrator.createUser();
@@ -82,21 +82,21 @@ describe("POST /api/v1/sessions", () => {
       });
 
       expect(response.status).toBe(401);
-      
+
       const responseBody = await response.json();
 
       expect(responseBody).toEqual({
         name: "UnauthorizedError",
         message: "Dados de autenticação não conferem",
         action: "Verifique se os dados estão corretos.",
-        status_code: 401
-      })
-    })
+        status_code: 401,
+      });
+    });
 
     test("With conrrect email and correct password", async () => {
       const createdUser = await orchestrator.createUser({
         email: "tudo.correto@mail.com",
-        password: "tudoCorreto"
+        password: "tudoCorreto",
       });
 
       const response = await fetch("http://localhost:3000/api/v1/sessions", {
@@ -106,12 +106,12 @@ describe("POST /api/v1/sessions", () => {
         },
         body: JSON.stringify({
           email: "tudo.correto@mail.com",
-          password: "tudoCorreto"
+          password: "tudoCorreto",
         }),
       });
 
       expect(response.status).toBe(201);
-      
+
       const responseBody = await response.json();
 
       expect(responseBody).toEqual({
@@ -121,7 +121,7 @@ describe("POST /api/v1/sessions", () => {
         token: responseBody.token,
         updated_at: responseBody.updated_at,
         user_id: createdUser.id,
-      })
+      });
 
       expect(uuidVersion(responseBody.id)).toBe(4);
       expect(Date.parse(responseBody.expires_at)).not.toBeNaN();
@@ -137,7 +137,7 @@ describe("POST /api/v1/sessions", () => {
       expect(expiresAt - createdAt).toBe(session.EXPIRATION_IN_MILLISECONDS);
 
       const parsedSetCookie = setCookieParser(response, {
-        map: true
+        map: true,
       });
 
       expect(parsedSetCookie.session_id).toEqual({
@@ -145,8 +145,8 @@ describe("POST /api/v1/sessions", () => {
         value: responseBody.token,
         maxAge: session.EXPIRATION_IN_MILLISECONDS / 1000,
         path: "/",
-        httpOnly: true
-      })
+        httpOnly: true,
+      });
     });
   });
 });
