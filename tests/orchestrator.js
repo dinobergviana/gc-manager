@@ -34,11 +34,11 @@ async function runPendingMigrations() {
 
 async function createUser(userObject) {
   return await user.create({
-    name: userObject.name || faker.internet.username().replace(/[_.-]/g, ""),
-    last_name: userObject.last_name || "Silva",
-    email: userObject.email || faker.internet.email(),
-    password: userObject.password || "validpassword",
-    campus: userObject.campus || 1,
+    name: userObject?.name || faker.internet.username().replace(/[_.-]/g, ""),
+    last_name: userObject?.last_name || "Silva",
+    email: userObject?.email || faker.internet.email(),
+    password: userObject?.password || "validpassword",
+    campus: userObject?.campus || 1,
   });
 }
 
