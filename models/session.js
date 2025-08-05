@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import database from "infra/database";
+import { UnauthorizedError } from "infra/errors";
 
 const EXPIRATION_IN_MILLISECONDS = 60 * 60 * 24 * 30 * 1000; // 30 days
 
@@ -23,6 +24,13 @@ async function findOneValidByToken(sessionToken) {
       ;`,
       values: [sessionToken],
     });
+
+    if (results.rowCount === 0) {
+      throw new UnauthorizedError({
+        message: "Verifique se este usuário está logado e tente novamente.",
+        action: "Usuário não possui sessão ativa.",
+      });
+    }
 
     return results.rows[0];
   }
