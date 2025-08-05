@@ -4,7 +4,7 @@ import orchestrator from "tests/orchestrator.js";
 // import session from "models/session.js";
 
 beforeAll(async () => {
-  await orchestrator.waitForAllServices();
+  await orchestrator.awaitForAllServices();
   await orchestrator.clearDatabase();
   await orchestrator.runPendingMigrations();
 });
@@ -20,7 +20,13 @@ describe("GET /api/v1/user", () => {
         campus: 1,
       });
 
-      const response = await fetch("http://localhost:3000/api/v1/user");
+      const sessionObject = await orchestrator.createSession(createdUser.id);
+
+      const response = await fetch("http://localhost:3000/api/v1/user", {
+        headers: {
+          Cookie: `session_id=${sessionObject.token}`,
+        },
+      });
 
       expect(response.status).toBe(200);
 
@@ -32,6 +38,7 @@ describe("GET /api/v1/user", () => {
         last_name: createdUser.last_name,
         email: createdUser.email,
         password: createdUser.password,
+        campus: createdUser.campus,
         created_at: createdUser.created_at.toISOString(),
         updated_at: createdUser.updated_at.toISOString(),
       });
