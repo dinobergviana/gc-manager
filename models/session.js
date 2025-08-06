@@ -46,14 +46,40 @@ async function create(userId) {
   async function runInsertQuery(token, userId, expiresAt) {
     const results = await database.query({
       text: `
-        INSERT INTO
-          sessions (token, user_id, expires_at)
-        VALUES
-          ($1, $2, $3)
-        RETURNING
-          *
-      `,
+      INSERT INTO
+        sessions (token, user_id, expires_at)
+      VALUES
+        ($1, $2, $3)
+      RETURNING
+      *
+      ;`,
       values: [token, userId, expiresAt],
+    });
+
+    return results.rows[0];
+  }
+}
+
+async function renew(sessionId) {
+  const expiresAt = new Date(Date.now() + EXPIRATION_IN_MILLISECONDS);
+
+  const renewedSessionObject = runUpdateQuery(sessionId, expiresAt);
+  return renewedSessionObject;
+
+  async function runUpdateQuery(sessionId, expiresAt) {
+    const results = await database.query({
+      text: `
+        UPDATE
+          sessions
+        SET
+          expires_at = $2,
+          updated_at = NOW()
+        WHERE
+          id = $1
+        RETURNING
+        *
+      ;`,
+      values: [sessionId, expiresAt],
     });
 
     return results.rows[0];
@@ -63,6 +89,7 @@ async function create(userId) {
 const session = {
   create,
   findOneValidByToken,
+  renew,
   EXPIRATION_IN_MILLISECONDS,
 };
 

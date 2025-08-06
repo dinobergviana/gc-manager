@@ -93,7 +93,7 @@ describe("POST /api/v1/sessions", () => {
       });
     });
 
-    test("With conrrect email and correct password", async () => {
+    test("With correct email and correct password", async () => {
       const createdUser = await orchestrator.createUser({
         email: "tudo.correto@mail.com",
         password: "tudoCorreto",
