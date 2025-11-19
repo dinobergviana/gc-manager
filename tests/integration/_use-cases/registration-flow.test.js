@@ -1,3 +1,4 @@
+import activation from "models/activation.js";
 import orchestrator from "tests/orchestrator";
 
 beforeAll(async () => {
@@ -8,6 +9,7 @@ beforeAll(async () => {
 });
 
 describe("Use case: Registration Flow (all successful)", () => {
+  let responseBody;
   test("Create user account", async () => {
     const createUserResponse = await fetch(
       "http://localhost:3000/api/v1/users",
@@ -19,7 +21,7 @@ describe("Use case: Registration Flow (all successful)", () => {
         body: JSON.stringify({
           name: "Joao",
           last_name: "Doe",
-          email: "jaoaDoe@email.com",
+          email: "joaoDoe@email.com",
           password: "senha123",
           campus: 1,
         }),
@@ -28,13 +30,13 @@ describe("Use case: Registration Flow (all successful)", () => {
 
     expect(createUserResponse.status).toBe(201);
 
-    const responseBody = await createUserResponse.json();
+    responseBody = await createUserResponse.json();
 
     expect(responseBody).toEqual({
       id: responseBody.id,
       name: "Joao",
       last_name: "Doe",
-      email: "jaoaDoe@email.com",
+      email: "joaoDoe@email.com",
       password: responseBody.password,
       features: ["read:activation_token"],
       campus: 1,
@@ -43,7 +45,17 @@ describe("Use case: Registration Flow (all successful)", () => {
     });
   });
 
-  test("Receive activation email", async () => {});
+  test("Receive activation email", async () => {
+    const lastEmail = await orchestrator.getLastEmail();
+
+    const activationToken = await activation.findOneByUserId(responseBody.id);
+
+    expect(lastEmail.sender).toBe("<contato@email.com>");
+    expect(lastEmail.recipients[0]).toBe("<joaoDoe@email.com>");
+    expect(lastEmail.subject).toBe("Ative o seu cadastro!");
+    expect(lastEmail.text).toContain(activationToken.id);
+  });
+
   test("Active account", async () => {});
   test("Login", async () => {});
   test("Get user information", async () => {});
