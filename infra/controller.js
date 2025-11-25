@@ -5,15 +5,22 @@ import {
   ValidationError,
   NotFoundError,
   UnauthorizedError,
+  ForbidenError,
 } from "infra/errors";
-import session from "models/session";
+import session from "models/session.js";
+import user from "models/user.js";
 
 function onErrorHandler(error, request, response) {
   if (
     error instanceof ValidationError ||
     error instanceof NotFoundError ||
-    error instanceof UnauthorizedError
+    error instanceof ForbidenError
   ) {
+    return response.status(error.statusCode).json(error);
+  }
+
+  if (error instanceof UnauthorizedError) {
+    clearSessionCookie(response);
     return response.status(error.statusCode).json(error);
   }
 
@@ -53,6 +60,54 @@ function clearSessionCookie(response) {
   response.setHeader("Set-Cookie", setCookie);
 }
 
+async function injectUser(request, response, next) {
+  if (request.cookies?.session_id) {
+    await injectAuthenticatedUser(request);
+  }
+
+  injectBaseUser(request);
+  return next();
+}
+
+function injectBaseUser(request) {
+  const baseUser = {
+    features: ["create:session", "read:content"],
+  };
+
+  request.context = {
+    ...request.context,
+    user: baseUser,
+  };
+}
+
+async function injectAuthenticatedUser(request) {
+  const sessionToken = request.cookies.session_id;
+  const sessionObject = await session.findOneValidByToken(sessionToken);
+  const userObject = await user.findOneById(sessionObject.user_id);
+
+  request.context = {
+    ...request.context,
+    user: userObject,
+  };
+
+  return request;
+}
+
+function canRequest(feature) {
+  return function canRequestMiddleware(request, response, next) {
+    const userTryingToRequest = request.context.user;
+
+    if (userTryingToRequest.features.includes(feature)) {
+      return next();
+    }
+
+    throw new ForbidenError({
+      action: `Verifique se o seu usuário possui a feature "${feature}"`,
+      message: "Você não possui permissão para executar essa ação.",
+    });
+  };
+}
+
 const controller = {
   errorHandlers: {
     onNoMatch: onNoMatchHandler,
@@ -60,6 +115,8 @@ const controller = {
   },
   setSessionCookie,
   clearSessionCookie,
+  injectUser,
+  canRequest,
 };
 
 export default controller;
