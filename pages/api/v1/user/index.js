@@ -5,6 +5,8 @@ import user from "models/user";
 
 const router = createRouter();
 
+router.use(controller.injectUser);
+router.post(controller.canRequest("read:session"), getHandler);
 router.get(getHandler);
 
 export default router.handler(controller.errorHandlers);

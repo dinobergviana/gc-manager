@@ -20,6 +20,8 @@ describe("GET /api/v1/user", () => {
         campus: 1,
       });
 
+      const activatedUser = await orchestrator.activateUser(createdUser);
+
       const sessionObject = await orchestrator.createSession(createdUser.id);
 
       const response = await fetch("http://localhost:3000/api/v1/user", {
@@ -44,10 +46,10 @@ describe("GET /api/v1/user", () => {
         last_name: createdUser.last_name,
         email: createdUser.email,
         password: createdUser.password,
-        features: ["read:activation_token"],
+        features: ["create:session", "read:session"],
         campus: createdUser.campus,
         created_at: createdUser.created_at.toISOString(),
-        updated_at: createdUser.updated_at.toISOString(),
+        updated_at: activatedUser.updated_at.toISOString(),
       });
 
       expect(uuidVersion(responseBody.id)).toBe(4);
@@ -90,15 +92,15 @@ describe("GET /api/v1/user", () => {
         },
       });
 
-      expect(response.status).toBe(401);
+      expect(response.status).toBe(403);
 
       const responseBody = await response.json();
 
       expect(responseBody).toEqual({
         name: "UnauthorizedError",
-        message: "Verifique se este usuário está logado e tente novamente.",
-        action: "Usuário não possui sessão ativa.",
-        status_code: 401,
+        message: "Usuário não possui sessão ativa.",
+        action: "Verifique se este usuário está logado e tente novamente.",
+        status_code: 403,
       });
     });
 
@@ -114,6 +116,8 @@ describe("GET /api/v1/user", () => {
         password: "senha123",
         campus: 2,
       });
+
+      const activatedUser = await orchestrator.activateUser(createdUser);
 
       const sessionObject = await orchestrator.createSession(createdUser.id);
 
@@ -136,9 +140,9 @@ describe("GET /api/v1/user", () => {
         campus: 2,
         email: createdUser.email,
         password: createdUser.password,
-        features: ["read:activation_token"],
+        features: ["create:session", "read:session"],
         created_at: createdUser.created_at.toISOString(),
-        updated_at: createdUser.updated_at.toISOString(),
+        updated_at: activatedUser.updated_at.toISOString(),
       });
 
       expect(uuidVersion(responseBody.id)).toBe(4);
@@ -194,15 +198,32 @@ describe("GET /api/v1/user", () => {
         },
       });
 
-      expect(response.status).toBe(401);
+      expect(response.status).toBe(403);
 
       const responseBody = await response.json();
 
       expect(responseBody).toEqual({
         name: "UnauthorizedError",
-        message: "Verifique se este usuário está logado e tente novamente.",
-        action: "Usuário não possui sessão ativa.",
-        status_code: 401,
+        message: "Usuário não possui sessão ativa.",
+        action: "Verifique se este usuário está logado e tente novamente.",
+        status_code: 403,
+      });
+    });
+  });
+
+  describe("Anonymous user", () => {
+    test("Retrieving the endpoint", async () => {
+      const response = await fetch("http://localhost:3000/api/v1/user");
+
+      expect(response.status).toBe(403);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        name: "UnauthorizedError",
+        message: "Usuário não possui sessão ativa.",
+        action: "Verifique se este usuário está logado e tente novamente.",
+        status_code: 403,
       });
     });
   });

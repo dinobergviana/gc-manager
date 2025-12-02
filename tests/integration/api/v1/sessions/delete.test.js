@@ -22,15 +22,15 @@ describe("DELETE /api/v1/sessions", () => {
         },
       });
 
-      expect(response.status).toBe(401);
+      expect(response.status).toBe(403);
 
       const responseBody = await response.json();
 
       expect(responseBody).toEqual({
         name: "UnauthorizedError",
-        action: "Usuário não possui sessão ativa.",
-        message: "Verifique se este usuário está logado e tente novamente.",
-        status_code: 401,
+        message: "Usuário não possui sessão ativa.",
+        action: "Verifique se este usuário está logado e tente novamente.",
+        status_code: 403,
       });
     });
 
@@ -58,15 +58,15 @@ describe("DELETE /api/v1/sessions", () => {
         },
       });
 
-      expect(response.status).toBe(401);
+      expect(response.status).toBe(403);
 
       const responseBody = await response.json();
 
       expect(responseBody).toEqual({
         name: "UnauthorizedError",
-        message: "Verifique se este usuário está logado e tente novamente.",
-        action: "Usuário não possui sessão ativa.",
-        status_code: 401,
+        message: "Usuário não possui sessão ativa.",
+        action: "Verifique se este usuário está logado e tente novamente.",
+        status_code: 403,
       });
     });
 
@@ -130,15 +130,15 @@ describe("DELETE /api/v1/sessions", () => {
         },
       );
 
-      expect(doubleCheckResponse.status).toBe(401);
+      expect(doubleCheckResponse.status).toBe(403);
 
       const doubleCheckResponseBody = await doubleCheckResponse.json();
 
       expect(doubleCheckResponseBody).toEqual({
         name: "UnauthorizedError",
-        action: "Usuário não possui sessão ativa.",
-        message: "Verifique se este usuário está logado e tente novamente.",
-        status_code: 401,
+        message: "Usuário não possui sessão ativa.",
+        action: "Verifique se este usuário está logado e tente novamente.",
+        status_code: 403,
       });
     });
   });
