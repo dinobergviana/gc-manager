@@ -86,7 +86,11 @@ describe("Use case: Registration Flow (all successful)", () => {
 
     const activatedUser = await user.findOneByEmail("joaoDoe@email.com");
 
-    expect(activatedUser.features).toEqual(["create:session", "read:session"]);
+    expect(activatedUser.features).toEqual([
+      "create:session",
+      "read:session",
+      "create:user",
+    ]);
   });
 
   test("Login", async () => {
