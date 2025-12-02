@@ -72,7 +72,7 @@ async function injectUser(request, response, next) {
 
 function injectBaseUser(request) {
   const baseUser = {
-    features: ["create:session", "read:content"],
+    features: ["read:activation_token", "create:session", "read:content"],
   };
 
   request.context = {
