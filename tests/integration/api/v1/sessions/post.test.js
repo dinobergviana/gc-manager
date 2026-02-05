@@ -27,7 +27,7 @@ describe("POST /api/v1/sessions", () => {
         }),
       });
 
-      expect(response.status).toBe(403);
+      expect(response.status).toBe(401);
 
       const responseBody = await response.json();
 
@@ -35,7 +35,7 @@ describe("POST /api/v1/sessions", () => {
         name: "UnauthorizedError",
         message: "Dados de autenticação não conferem",
         action: "Verifique se os dados estão corretos.",
-        status_code: 403,
+        status_code: 401,
       });
     });
 
@@ -55,7 +55,7 @@ describe("POST /api/v1/sessions", () => {
         }),
       });
 
-      expect(response.status).toBe(403);
+      expect(response.status).toBe(401);
 
       const responseBody = await response.json();
 
@@ -63,7 +63,7 @@ describe("POST /api/v1/sessions", () => {
         name: "UnauthorizedError",
         message: "Dados de autenticação não conferem",
         action: "Verifique se os dados estão corretos.",
-        status_code: 403,
+        status_code: 401,
       });
     });
 
@@ -81,7 +81,7 @@ describe("POST /api/v1/sessions", () => {
         }),
       });
 
-      expect(response.status).toBe(403);
+      expect(response.status).toBe(401);
 
       const responseBody = await response.json();
 
@@ -89,7 +89,7 @@ describe("POST /api/v1/sessions", () => {
         name: "UnauthorizedError",
         message: "Dados de autenticação não conferem",
         action: "Verifique se os dados estão corretos.",
-        status_code: 403,
+        status_code: 401,
       });
     });
 

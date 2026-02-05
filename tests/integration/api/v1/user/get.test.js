@@ -92,7 +92,7 @@ describe("GET /api/v1/user", () => {
         },
       });
 
-      expect(response.status).toBe(403);
+      expect(response.status).toBe(401);
 
       const responseBody = await response.json();
 
@@ -100,7 +100,7 @@ describe("GET /api/v1/user", () => {
         name: "UnauthorizedError",
         message: "Usuário não possui sessão ativa.",
         action: "Verifique se este usuário está logado e tente novamente.",
-        status_code: 403,
+        status_code: 401,
       });
     });
 
@@ -198,7 +198,7 @@ describe("GET /api/v1/user", () => {
         },
       });
 
-      expect(response.status).toBe(403);
+      expect(response.status).toBe(401);
 
       const responseBody = await response.json();
 
@@ -206,7 +206,7 @@ describe("GET /api/v1/user", () => {
         name: "UnauthorizedError",
         message: "Usuário não possui sessão ativa.",
         action: "Verifique se este usuário está logado e tente novamente.",
-        status_code: 403,
+        status_code: 401,
       });
     });
   });
@@ -215,7 +215,7 @@ describe("GET /api/v1/user", () => {
     test("Retrieving the endpoint", async () => {
       const response = await fetch("http://localhost:3000/api/v1/user");
 
-      expect(response.status).toBe(403);
+      expect(response.status).toBe(401);
 
       const responseBody = await response.json();
 
@@ -223,7 +223,7 @@ describe("GET /api/v1/user", () => {
         name: "UnauthorizedError",
         message: "Usuário não possui sessão ativa.",
         action: "Verifique se este usuário está logado e tente novamente.",
-        status_code: 403,
+        status_code: 401,
       });
     });
   });

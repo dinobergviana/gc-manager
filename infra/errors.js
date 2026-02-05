@@ -111,7 +111,7 @@ export class UnauthorizedError extends Error {
 
     this.name = "UnauthorizedError";
     this.action = action || "Faça novamente o login para continuar.";
-    this.statusCode = 403;
+    this.statusCode = 401;
   }
 
   toJSON() {

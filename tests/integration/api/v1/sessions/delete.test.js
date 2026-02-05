@@ -22,7 +22,7 @@ describe("DELETE /api/v1/sessions", () => {
         },
       });
 
-      expect(response.status).toBe(403);
+      expect(response.status).toBe(401);
 
       const responseBody = await response.json();
 
@@ -30,7 +30,7 @@ describe("DELETE /api/v1/sessions", () => {
         name: "UnauthorizedError",
         message: "Usuário não possui sessão ativa.",
         action: "Verifique se este usuário está logado e tente novamente.",
-        status_code: 403,
+        status_code: 401,
       });
     });
 
@@ -58,7 +58,7 @@ describe("DELETE /api/v1/sessions", () => {
         },
       });
 
-      expect(response.status).toBe(403);
+      expect(response.status).toBe(401);
 
       const responseBody = await response.json();
 
@@ -66,7 +66,7 @@ describe("DELETE /api/v1/sessions", () => {
         name: "UnauthorizedError",
         message: "Usuário não possui sessão ativa.",
         action: "Verifique se este usuário está logado e tente novamente.",
-        status_code: 403,
+        status_code: 401,
       });
     });
 
@@ -130,7 +130,7 @@ describe("DELETE /api/v1/sessions", () => {
         },
       );
 
-      expect(doubleCheckResponse.status).toBe(403);
+      expect(doubleCheckResponse.status).toBe(401);
 
       const doubleCheckResponseBody = await doubleCheckResponse.json();
 
@@ -138,7 +138,7 @@ describe("DELETE /api/v1/sessions", () => {
         name: "UnauthorizedError",
         message: "Usuário não possui sessão ativa.",
         action: "Verifique se este usuário está logado e tente novamente.",
-        status_code: 403,
+        status_code: 401,
       });
     });
   });
