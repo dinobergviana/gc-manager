@@ -102,6 +102,47 @@ describe("PATCH /api/v1/users/[id]", () => {
       });
     });
 
+    test("With `user 2` targeting `user 1`", async () => {
+      const createdUserA = await orchestrator.createUser({
+        email: "userA@email.com",
+      });
+
+      const createdUserB = await orchestrator.createUser({
+        email: "userB@email.com",
+      });
+
+      const activatedUserB = await orchestrator.activateUser(createdUserB);
+      const sessionObjectB = await orchestrator.createSession(
+        activatedUserB.id,
+      );
+
+      const response = await fetch(
+        `http://localhost:3000/api/v1/users/${createdUserA.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Cookie: `session_id=${sessionObjectB.token}`,
+          },
+          body: JSON.stringify({
+            email: "user3@email.com",
+          }),
+        },
+      );
+
+      expect(response.status).toBe(403);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        action:
+          "Verifique se você possui a feature necessária para atualizar outro usuário.",
+        message: "Você não possui permissão para atualizar outro usuário.",
+        name: "ForbidenError",
+        status_code: 403,
+      });
+    });
+
     test("With unique 'email'", async () => {
       const createdUser = await orchestrator.createUser({
         email: "uniqueuser101@email.com",
