@@ -64,9 +64,10 @@ function clearSessionCookie(response) {
 async function injectUser(request, response, next) {
   if (request.cookies?.session_id) {
     await injectAuthenticatedUser(request);
+  } else {
+    injectBaseUser(request);
   }
 
-  injectBaseUser(request);
   return next();
 }
 

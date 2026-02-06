@@ -6,8 +6,9 @@ import { validate as validateUuid } from "uuid";
 
 const router = createRouter();
 
+router.use(controller.injectUser);
 router.get(getHandler);
-router.patch(patchHandler);
+router.patch(controller.canRequest("update:user"), patchHandler);
 
 export default router.handler(controller.errorHandlers);
 
