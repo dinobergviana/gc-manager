@@ -102,7 +102,7 @@ describe("PATCH /api/v1/users/[id]", () => {
       });
     });
 
-    test("With `user 2` targeting `user 1`", async () => {
+    test("With `userB` targeting `userA`", async () => {
       const createdUserA = await orchestrator.createUser({
         email: "userA@email.com",
       });
@@ -125,7 +125,7 @@ describe("PATCH /api/v1/users/[id]", () => {
             Cookie: `session_id=${sessionObjectB.token}`,
           },
           body: JSON.stringify({
-            email: "user3@email.com",
+            email: "userC@email.com",
           }),
         },
       );
@@ -245,6 +245,59 @@ describe("PATCH /api/v1/users/[id]", () => {
 
       expect(correctPasswordMatch).toBe(true);
       expect(incorrectPasswordMatch).toBe(false);
+    });
+  });
+
+  describe("Privileged user", () => {
+    test("With `update:user:others` targeting `defaultUser`", async () => {
+      const privilegedUser = await orchestrator.createUser();
+      const activatedPrivilegedUser =
+        await orchestrator.activateUser(privilegedUser);
+      const privilegedUserSession = await orchestrator.createSession(
+        activatedPrivilegedUser.id,
+      );
+
+      await orchestrator.addFeaturesToUser(privilegedUser, [
+        "update:user:others",
+      ]);
+
+      const defaultUser = await orchestrator.createUser();
+
+      const response = await fetch(
+        `http://localhost:3000/api/v1/users/${defaultUser.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Cookie: `session_id=${privilegedUserSession.token}`,
+          },
+          body: JSON.stringify({
+            email: "alteradoPorPrivilegiado@email.com",
+          }),
+        },
+      );
+
+      expect(response.status).toBe(200);
+
+      const responseBody = await response.json();
+
+      expect(responseBody).toEqual({
+        id: defaultUser.id,
+        name: defaultUser.name,
+        last_name: defaultUser.last_name,
+        email: "alteradoPorPrivilegiado@email.com",
+        password: defaultUser.password,
+        features: defaultUser.features,
+        campus: 1,
+        created_at: responseBody.created_at,
+        updated_at: responseBody.updated_at,
+      });
+
+      expect(uuidVersion(responseBody.id)).toBe(4);
+      expect(Date.parse(responseBody.created_at)).not.toBeNaN();
+      expect(Date.parse(responseBody.updated_at)).not.toBeNaN();
+
+      expect(responseBody.updated_at > responseBody.created_at).toBe(true);
     });
   });
 });
