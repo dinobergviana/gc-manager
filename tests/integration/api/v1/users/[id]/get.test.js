@@ -33,8 +33,6 @@ describe("GET /api/v1/users", () => {
         id: response2Body.id,
         name: "Joao",
         last_name: "Doe",
-        email: "joao.doe@gmail.com",
-        password: response2Body.password,
         features: ["read:activation_token"],
         campus: 1,
         created_at: response2Body.created_at,

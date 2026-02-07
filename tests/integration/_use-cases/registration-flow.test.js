@@ -41,8 +41,6 @@ describe("Use case: Registration Flow (all successful)", () => {
       id: createdUserResponseBody.id,
       name: "Joao",
       last_name: "Doe",
-      email: "joaoDoe@email.com",
-      password: createdUserResponseBody.password,
       features: ["read:activation_token"],
       campus: 1,
       created_at: createdUserResponseBody.created_at,
