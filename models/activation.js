@@ -65,7 +65,7 @@ async function findOneValidById(tokenId) {
 
 async function sendEmailToUser(user, activationToken) {
   await email.send({
-    from: "Equipe GC Manager <contato@email.com>",
+    from: "Equipe GC Manager <contato@dinobergueviana.com.br>",
     to: user.email,
     subject: "Ative o seu cadastro!",
     text: `${user.name}, clique no link abaixo para ativar o seu cadastro!
